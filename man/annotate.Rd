@@ -31,19 +31,19 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TR
    \verb{r}   \tab \ics \tab Change to rectangle drawing mode (as above). \cr
    \verb{c}   \tab \ics \tab Change to circle drawing mode (as above). \cr
    \verb{t}   \tab \ics \tab Change to text drawing mode (click on a location, type some text, and after hitting \verb{enter} the text is added next to the click location). \cr
-   \verb{-+}  \tab \ics \tab Decrease/increase the line width or point/text size (the default sizes are set by the \code{lwd} and \code{cex} arguments). Can also use \verb{=} instead of \verb{+} or \verb{(} and \verb{)} for the same purpose. \cr
+   \verb{-+}  \tab \ics \tab Decrease/increase the line width or point/text size (the default sizes are set by the \code{lwd} and \code{cex} arguments). Can also use \verb{=} instead of \verb{+} or the \verb{(} and \verb{)} keys for the same purpose. \cr
    \verb{s}   \tab \ics \tab Toggle snap mode, so that lines/arrows are drawn exactly horizontally/vertically. \cr
    \verb{u}   \tab \ics \tab Undo (i.e., remove) annotations that have been added to the plot. \cr
-   \verb{e}   \tab \ics \tab Change to the eraser mode (can be used to draw over the plot with the background color). \cr
+   \verb{e}   \tab \ics \tab Change to eraser mode (can be used to draw over parts of the plot with the background color). \cr
    \verb{z}   \tab \ics \tab Redraw the plot without the annotations. \cr
    \verb{x}   \tab \ics \tab Fix the current state of the plot (so \verb{z} redraws the plot in this state). \cr
-   \verb{b}   \tab \ics \tab Make the plot completely blank. See also \code{\link{blank}()} for creating a blank plot. \cr
+   \verb{b}   \tab \ics \tab Make the plot completely blank. See also \code{\link{blank}} for creating a blank plot. \cr
    \verb{v}   \tab \ics \tab Toggle \code{info} on/off. \cr
    }
 
    When \code{info=TRUE} (the default), then information about the drawing mode and colors are shown at the top left while annotating a plot. Note that this information may overlap with the plot title or other elements.
 
-   Note that the undo functionality removes annotations by drawing on top of them with the background color of the plot. Therefore, any elements underneath an annotation that is removed in this manner will also be drawn over.
+   The undo functionality removes annotations by drawing on top of them with the background color of the plot. Therefore, any elements underneath an annotation that is removed in this manner will also be drawn over.
 
    After annotating a plot, it should be possible to save the plot including the annotations with \code{\link{dev.print}} (e.g., using something like \code{dev.print(device=png, filename="plot.png", width=<width>, height=<height>)}). However, by default, the plot will have a transparent background color, which is typically not what is desired. To avoid this issue, one can use \code{par(bg="white")} before creating the plot to set a white background color.
 
