@@ -1,12 +1,12 @@
-.info <- function(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, verbose) {
+.info <- function(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info) {
 
-   if (!verbose)
+   if (!info)
       return(invisible())
 
    on.exit(par(xpd=par("xpd")))
    par(xpd=NA)
 
-   .clear(verbose)
+   .clear(info)
 
    col.bg <- par("bg")
 
@@ -70,9 +70,9 @@
 
 }
 
-.clear <- function(verbose) {
+.clear <- function(info) {
 
-   if (!verbose)
+   if (!info)
       return(invisible())
 
    on.exit(par(xpd=par("xpd")))

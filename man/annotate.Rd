@@ -5,13 +5,13 @@
    Function to add annotations to a plot.
 }
 \usage{
-annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), verbose=TRUE)
+annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TRUE)
 }
 \arguments{
    \item{col}{a vector of colors (can be up to length 9).}
    \item{lwd}{a numeric vector to specify the line width for drawing, for symbols, and the eraser.}
    \item{cex}{a numeric vector to specify the size of points and text.}
-   \item{verbose}{a logical to specify whether visual information about the drawing mode and colors should be shown while annotating a plot.}
+   \item{info}{a logical to specify whether visual information about the drawing mode and colors should be shown while annotating a plot.}
 }
 \details{
 
@@ -38,10 +38,10 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), verbose
    \verb{z}   \tab \ics \tab Redraw the plot without the annotations. \cr
    \verb{x}   \tab \ics \tab Fix the current state of the plot (so \verb{z} redraws the plot in this state). \cr
    \verb{b}   \tab \ics \tab Make the plot completely blank. See also \code{\link{blank}()} for creating a blank plot. \cr
-   \verb{v}   \tab \ics \tab Toggle \code{verbose} on/off. \cr
+   \verb{v}   \tab \ics \tab Toggle \code{info} on/off. \cr
    }
 
-   When \code{verbose=TRUE} (the default), then information about the drawing mode and colors are shown at the top left while annotating a plot. Note that this information may overlap with the plot title or other elements.
+   When \code{info=TRUE} (the default), then information about the drawing mode and colors are shown at the top left while annotating a plot. Note that this information may overlap with the plot title or other elements.
 
    Note that the undo functionality removes annotations by drawing on top of them with the background color of the plot. Therefore, any elements underneath an annotation that is removed in this manner will also be drawn over.
 
