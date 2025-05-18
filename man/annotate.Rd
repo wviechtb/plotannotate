@@ -44,7 +44,7 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), verbose
 
    Note that the undo functionality removes annotations by drawing on top of them with the background color of the plot. Therefore, any elements underneath an annotation that is removed in this manner will also be drawn over.
 
-   After annotating a plot, it should be possible to save the plot including the annotations with \code{\link{dev.print}} (e.g., using something like \code{dev.print(device=png, filename="plot.png", width=<width>, height=<height>)}). However, by default, the plot will have a transparent background color, which is typically not what is desired. To avoid this issue, one can set a white background when creating the plotting device (e.g., with \code{x11(bg="white")} or \code{windows(bg="white")}).
+   After annotating a plot, it should be possible to save the plot including the annotations with \code{\link{dev.print}} (e.g., using something like \code{dev.print(device=png, filename="plot.png", width=<width>, height=<height>)}). However, by default, the plot will have a transparent background color, which is typically not what is desired. To avoid this issue, one can use \code{par(bg="white")} before creating the plot to set a white background color.
 
 }
 \author{
