@@ -30,16 +30,16 @@
       lwd <- lwd.draw
    if (mode == "eraser")
       lwd <- lwd.eraser
-   if (mode %in% c("rect","line","arrow","circle"))
+   if (mode %in% c("rect", "circle", "line", "arrow", "arrow2"))
       lwd <- lwd.symb
    if (mode == "point")
       cex.pt <- cex.pt
    if (mode == "text")
       cex.txt <- cex.txt
 
-   if (mode %in% c("draw","eraser","rect","line","arrow","circle"))
+   if (mode %in% c("draw", "eraser", "rect", "circle", "line", "arrow", "arrow2"))
       txt <- paste0("Line width: ", lwd)
-   if (mode %in% c("line","arrow") && snap)
+   if (mode %in% c("line", "arrow", "arrow2") && snap)
       txt <- paste0(txt, " (snap)")
    if (mode == "point")
       txt <- paste0("Point size: ", cex.pt)

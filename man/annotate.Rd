@@ -27,6 +27,7 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), verbose
    \verb{p}   \tab \ics \tab Change to point drawing mode (click on a location of the plot to add a point). \cr
    \verb{l}   \tab \ics \tab Change to line drawing mode (click on a location, hold the mouse button, move the pointer to a different location, and release the mouse button to draw a line). \cr
    \verb{a}   \tab \ics \tab Change to arrow drawing mode (as above). \cr
+   \verb{A}   \tab \ics \tab Change to arrow drawing mode with arrowheads at both ends (as above). \cr
    \verb{r}   \tab \ics \tab Change to rectangle drawing mode (as above). \cr
    \verb{c}   \tab \ics \tab Change to circle drawing mode (as above). \cr
    \verb{t}   \tab \ics \tab Change to text drawing mode (click on a location, type some text, and after hitting \verb{enter} the text is added next to the click location). \cr
