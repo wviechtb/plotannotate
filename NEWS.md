@@ -1,3 +1,3 @@
-# plotannotate 0.1-1 (2025-05-18)
+# plotannotate 1.0-0 (2025-05-19)
 
-- first public release
+- first release

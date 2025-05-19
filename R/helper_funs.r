@@ -3,15 +3,12 @@
    if (!info)
       return(invisible())
 
-   on.exit(par(xpd=par("xpd")))
-   par(xpd=NA)
-
-   .clear(info)
-
    col.bg <- par("bg")
 
    if (col.bg == "transparent")
       col.bg <- "white"
+
+   .clear(info, col.bg)
 
    # add mode text
 
@@ -21,7 +18,7 @@
    txt <- paste0("Mode: ", mode)
    text(cords[1], cords[2], txt, pos=4, cex=0.5/par("cex"))
 
-   # add line width text
+   # add lwd / cex text
 
    cords <- c(grconvertX(0.00, from="ndc", to="user"),
               grconvertY(0.98, from="ndc", to="user"))
@@ -34,7 +31,7 @@
       lwd <- lwd.symb
    if (mode == "point")
       cex.pt <- cex.pt
-   if (mode == "text")
+   if (mode %in% c("text", "type"))
       cex.txt <- cex.txt
 
    if (mode %in% c("draw", "eraser", "rect", "circle", "line", "arrow", "arrow2"))
@@ -43,20 +40,20 @@
       txt <- paste0(txt, " (snap)")
    if (mode == "point")
       txt <- paste0("Point size: ", cex.pt)
-   if (mode == "text")
+   if (mode %in% c("text", "type"))
       txt <- paste0("Text size: ", cex.txt)
 
    text(cords[1], cords[2], txt, pos=4, cex=0.5/par("cex"))
 
    # add color boxes
 
-   xpos <- seq(0.10, 0.10+9*.024, length.out=9)
+   xpos <- seq(0.10, 0.10 + 9 * 0.024, length.out=9)
 
    for (i in 1:length(col)) {
 
       cords1 <- c(grconvertX(xpos[i], from="ndc", to="user"),
                   grconvertY(0.975, from="ndc", to="user"))
-      cords2 <- c(grconvertX(xpos[i]+.02, from="ndc", to="user"),
+      cords2 <- c(grconvertX(xpos[i] + 0.02, from="ndc", to="user"),
                   grconvertY(0.995, from="ndc", to="user"))
 
       rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col[i], border=col.bg, lwd=6)
@@ -70,18 +67,10 @@
 
 }
 
-.clear <- function(info) {
+.clear <- function(info, col.bg) {
 
    if (!info)
       return(invisible())
-
-   on.exit(par(xpd=par("xpd")))
-   par(xpd=NA)
-
-   col.bg <- par("bg")
-
-   if (col.bg == "transparent")
-      col.bg <- "white"
 
    cords1 <- c(grconvertX(0.00, from="ndc", to="user"),
                grconvertY(0.96, from="ndc", to="user"))

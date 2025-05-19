@@ -1,28 +1,34 @@
 annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TRUE) {
 
    # check for interactive mode
+
    if (!interactive()) {
       message("Function can only be used in interactive mode.")
       return(invisible())
    }
 
    # if no plotting device is open, exit
+
    if (dev.cur() == 1L) {
       message("No graphics device is open.")
       return(invisible())
    }
 
    # check if plot may be based on the grid graphics engine
+
    if (length(grid::grid.ls(print=FALSE)$name != 0L)) {
       message("The current plot appears to be based on grid graphics (which is not supported).")
       return(invisible())
    }
 
    # check for getGraphicsEvent() capabilities of the current plotting device
+
    if (any(!is.element(c("MouseDown", "MouseMove", "MouseUp", "Keybd"), dev.capabilities()$events))) {
       message("The graphics device does not support event handling.")
       return(invisible())
    }
+
+   # defaults for arguments if NULL is specified (for blank() to work correctly)
 
    if (is.null(col))
       col <- c("black","red","green","blue")
@@ -33,21 +39,22 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    if (is.null(info))
       info <- TRUE
 
-   # checks on col argument
+   # checks on col, lwd, and cex arguments
+
    ncol <- length(col)
 
    if (ncol > 9L)
       stop("Argument 'col' can be used to specify up to 9 colors, no more.", call.=FALSE)
 
-   # checks on lwd and cex arguments
    if (length(lwd) == 1L)
-      lwd <- rep(lwd, 3)
+      lwd <- rep(lwd, 3L)
    if (length(lwd) == 2L)
-      lwd <- rep(lwd, lwd, 3)
+      lwd <- rep(lwd, lwd, 3L)
    if (length(lwd) != 3L)
       stop("Argument 'lwd' should be of length 1, 2, or 3.", call.=FALSE)
+
    if (length(cex) == 1L)
-      cex <- rep(cex, 2)
+      cex <- rep(cex, 2L)
 
    lwd.draw   <- lwd[1]
    lwd.symb   <- lwd[2]
@@ -55,15 +62,20 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    cex.pt     <- cex[1]
    cex.txt    <- cex[2]
 
-   # start in draw mode with first color selected and snap=FALSE
+   # start in freehand draw mode with first color selected and snap=FALSE
+
    colnum <- 1
    mode <- "draw"
    snap <- FALSE
 
+   on.exit(par(xpd=par("xpd")))
+   par(xpd=NA)
+
    #dev.control(displaylist="inhibit")
    sav <- recordPlot()
 
-   # get background color
+   # get background color (set to white if it is transparent)
+
    col.bg <- par("bg")
 
    if (col.bg == "transparent")
@@ -73,7 +85,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
    fun.mousedown <- function(button,x,y) {
       if (button == 2L) {
-         .clear(info)
+         .clear(info, col.bg)
          return(invisible(1))
       }
       pressed <<- TRUE
@@ -82,15 +94,14 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       x <- grconvertX(x, from="ndc", to="user")
       y <- grconvertY(y, from="ndc", to="user")
       if (mode == "draw")
-         buffer <<- c(buffer, draw=list(list(x=x, y=y)))
+         buffer <<- c(buffer, draw=list(list(x=x, y=y, lwd=lwd.draw)))
       if (mode == "point") {
          points(x, y, pch=19, col=col[colnum], cex=cex.pt)
-         buffer <<- c(buffer, point=list(list(x=x, y=y)))
+         buffer <<- c(buffer, point=list(list(x=x, y=y, cex=cex.pt)))
          pressed <<- FALSE
       }
-      if (mode == "text") {
+      if (mode == "text")
          txt <<- ""
-      }
       x.start <<- x
       y.start <<- y
       x.last <<- x
@@ -119,11 +130,14 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    }
 
    fun.mouseup <- function(button,x,y) {
-      if (mode == "text") # so that 'pressed' stays TRUE and keystrokes are for adding text
-         return(NULL)
       pressed <<- FALSE
-      xyok <- x.start != x.last && y.start != y.last
-      if (!xyok)
+      if (mode == "text") {
+         mode <<- "type"
+         .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+         return(NULL)
+      }
+      sameloc <- x.start == x.last && y.start == y.last
+      if (sameloc)
          return(NULL)
       if (mode == "rect")
          rect(x.start, y.start, x.last, y.last, lwd=lwd.symb, border=col[colnum])
@@ -147,27 +161,34 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       if (mode == "arrow2")
          arrows(x.start, y.start, x.last, y.last, lwd=lwd.symb, col=col[colnum], code=3)
       if (mode %in% c("rect", "circle", "line", "arrow", "arrow2")) {
-         buffer <<- c(buffer, list(list(x=c(x.start, x.last), y=c(y.start, y.last))))
-         names(buffer)[length(names(buffer))] <<- mode
+         buffer <<- c(buffer, list(list(x=c(x.start, x.last), y=c(y.start, y.last), lwd=lwd.symb)))
+         if (is.null(names(buffer))) { # if there is nothing in the buffer yet
+            names(buffer) <<- mode
+         } else {
+            names(buffer)[length(names(buffer))] <<- mode
+         }
       }
       return(NULL)
    }
 
    fun.key <- function(key) {
 
-      if (mode == "text" && pressed) {
+      if (mode == "type") {
 
          # escape to restart
+
          if (key == "\033" || key == "ctrl-[") {
-            txt <- ""
-            pressed <<- FALSE
+            txt <<- ""
+            mode <<- "text"
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
             return(NULL)
          }
 
          # backspace to remove the last character from txt
-         if (identical(key, "\b") || identical(key, "ctrl-H")) {
-            if (nchar(txt) > 1) {
-               txt <<- substr(txt, 1, nchar(txt)-1)
+
+         if (key == "\b" || key == "ctrl-H") {
+            if (nchar(txt) > 1L) {
+               txt <<- substr(txt, 1L, nchar(txt)-1L)
             } else {
                txt <<- ""
             }
@@ -176,7 +197,8 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          }
 
          # enter to add the text at the chosen location
-         if (identical(key, "\r") || identical(key, "ctrl-J")) {
+
+         if (key == "\r" || key == "ctrl-J") {
             text(x.start, y.start, txt, cex=cex.txt, adj=c(0,0.5))
             txtw <- strwidth(txt, cex=cex.txt)  * 2
             txth <- strheight(txt, cex=cex.txt) * 2
@@ -185,8 +207,8 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             ybottom <- y.start - txth / 2
             ytop    <- y.start + txth / 2
             buffer <<- c(buffer, text=list(list(x=c(xleft, xright), y=c(ybottom, ytop), txt=txt)))
-            txt <- ""
-            pressed <<- FALSE
+            txt <<- ""
+            mode <<- "text"
             .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
             return(NULL)
          }
@@ -200,7 +222,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          # q to exit
 
          if (key == "q") {
-            .clear(info)
+            .clear(info, col.bg)
             return(invisible(1))
          }
 
@@ -227,7 +249,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
          # - / += to decrease/increase the line width / point size
 
-         if (is.element(key, c("-","("))) {
+         if (is.element(key, c("-","Down"))) {
             if (mode == "draw")
                lwd.draw <<- max(1, lwd.draw - 1)
             if (mode == "eraser")
@@ -242,7 +264,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             return(NULL)
          }
 
-         if (is.element(key, c("=","+",")"))) {
+         if (is.element(key, c("=","+","Up"))) {
             if (mode == "draw")
                lwd.draw <<- lwd.draw + 1
             if (mode == "eraser")
@@ -257,7 +279,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             return(NULL)
          }
 
-         # d/p/e/r/c to switch into the various drawing modes
+         # d/p/e/l/a/A/s/r/c/t to switch into the various drawing modes
 
          if (key == "d") {
             mode <<- "draw"
@@ -310,6 +332,8 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
          }
 
+         # z and x for replaying and recording the plot
+
          if (key == "z") {
             replayPlot(sav)
             buffer <<- list()
@@ -321,41 +345,47 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             buffer <<- list()
          }
 
-         if (key == "v") {
+         # i to toggle info
+
+         if (key == "i") {
             info <<- !info
             if (!info)
-               .clear(TRUE)
+               .clear(TRUE, col.bg)
             .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
          }
 
-         if (key == "F12")
-            print(buffer)
+         #if (key == "F12")
+         #   print(buffer)
+
+         # u to undo
 
          if (key == "u" && length(buffer) > 0) {
             blen <- length(buffer)
             type <- names(buffer)[blen]
             xb <- buffer[[blen]]$x
             yb <- buffer[[blen]]$y
+            lwdb <- buffer[[blen]]$lwd
+            cexb <- buffer[[blen]]$cex
             if (type == "draw") {
                for (i in 1:(length(xb)-1)) {
-                  segments(xb[i], yb[i], xb[i+1], yb[i+1], lwd=lwd.draw+4, col=col.bg)
+                  segments(xb[i], yb[i], xb[i+1], yb[i+1], lwd=lwdb+4, col=col.bg)
                }
             }
             if (type == "rect")
-               rect(xb[1], yb[1], xb[2], yb[2], lwd=lwd.symb+4, border=col.bg)
+               rect(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, border=col.bg)
             if (type == "circle") {
                x.cent <- (xb[1] + xb[2]) / 2
                y.cent <- (yb[1] + yb[2]) / 2
-               symbols(x.cent, y.cent, circles=max(abs(xb[1]-xb[2]), abs(yb[1]-yb[2]))/2, lwd=lwd.symb+4, fg=col.bg, inches=FALSE, add=TRUE)
+               symbols(x.cent, y.cent, circles=max(abs(xb[1]-xb[2]), abs(yb[1]-yb[2]))/2, lwd=lwdb+4, fg=col.bg, inches=FALSE, add=TRUE)
             }
             if (type == "point")
-               points(xb, yb, pch=19, col=col.bg, cex=1.2*cex.pt)
+               points(xb, yb, pch=19, col=col.bg, cex=cexb*1.2)
             if (type == "line")
-               segments(xb[1], yb[1], xb[2], yb[2], lwd=lwd.symb+4, col=col.bg)
+               segments(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg)
             if (type == "arrow")
-               arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwd.symb+4, col=col.bg)
+               arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg)
             if (type == "arrow2")
-               arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwd.symb+4, col=col.bg, code=3)
+               arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg, code=3)
             if (type == "text")
                rect(xb[1], yb[1], xb[2], yb[2], col=col.bg, border=col.bg)
             buffer <<- buffer[-blen]
@@ -379,7 +409,6 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    txt <- ""
    buffer <- list()
 
-   getGraphicsEvent(prompt="", onMouseDown=fun.mousedown, onMouseMove=fun.mousemove,
-                    onMouseUp=fun.mouseup, onKeybd=fun.key)
+   getGraphicsEvent(prompt="", onMouseDown=fun.mousedown, onMouseMove=fun.mousemove, onMouseUp=fun.mouseup, onKeybd=fun.key)
 
 }

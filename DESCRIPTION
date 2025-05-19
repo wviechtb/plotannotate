@@ -1,9 +1,9 @@
 Package: plotannotate
-Version: 0.1-1
-Date: 2025-05-18
+Version: 1.0-0
+Date: 2025-05-19
 Title: Annotate Plots
 Authors@R: person(given = "Wolfgang", family = "Viechtbauer", role = c("aut","cre"), email = "wvb@wvbauer.com", comment = c(ORCID = "0000-0003-3463-4063"))
-Depends: R (>= 4.2.0),
+Depends: R (>= 4.2.0)
 Imports: graphics, grDevices, grid
 Description: Annotate plots with freehand drawing, symbols (points, lines, arrows, rectangles, circles), and text.
 License: GPL-3
