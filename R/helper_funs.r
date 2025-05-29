@@ -1,4 +1,4 @@
-.info <- function(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info) {
+.info <- function(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info) {
 
    if (!info)
       return(invisible())
@@ -27,15 +27,17 @@
       lwd <- lwd.draw
    if (mode == "eraser")
       lwd <- lwd.eraser
-   if (mode %in% c("rect", "circle", "line", "arrow", "arrow2"))
+   if (mode %in% c("rect", "circle", "ellipse", "line", "arrow", "arrow2"))
       lwd <- lwd.symb
    if (mode == "point")
       cex.pt <- cex.pt
    if (mode %in% c("text", "type"))
       cex.txt <- cex.txt
 
-   if (mode %in% c("draw", "eraser", "rect", "circle", "line", "arrow", "arrow2"))
+   if (mode %in% c("draw", "eraser", "rect", "circle", "ellipse", "line", "arrow", "arrow2"))
       txt <- paste0("Line width: ", lwd)
+   if (mode == "draw" && smooth)
+      txt <- paste0(txt, " (smooth)")
    if (mode %in% c("line", "arrow", "arrow2") && snap)
       txt <- paste0(txt, " (snap)")
    if (mode == "point")
@@ -47,7 +49,7 @@
 
    # add color boxes
 
-   xpos <- seq(0.10, 0.10 + 9 * 0.024, length.out=9)
+   xpos <- seq(0.11, 0.11 + 9 * 0.024, length.out=9)
 
    for (i in 1:length(col)) {
 
@@ -81,4 +83,14 @@
 
    return(invisible())
 
+}
+
+.smooth <- function(x, y, n=1000) {
+   dx <- diff(x)
+   dy <- diff(y)
+   dist <- c(0, cumsum(sqrt(dx^2 + dy^2)))
+   newdat <- seq(min(dist), max(dist), length.out=n)
+   x.smooth <- predict(loess(x ~ dist), newdata=newdat)
+   y.smooth <- predict(loess(y ~ dist), newdata=newdat)
+   list(x=x.smooth, y=y.smooth)
 }

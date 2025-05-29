@@ -15,10 +15,13 @@ blank(annotate=TRUE, bg="white", \dots)
 \details{
    The function creates a blank plot. This is useful if one simply wants to make some drawing (and not add annotations to an existing plot).
 }
+\value{
+   No return value (called for side effects).
+}
 \author{
    Wolfgang Viechtbauer (\email{wvb@wvbauer.com}).
 }
 \examples{
-\dontrun{
+\donttest{
 blank()}
 }

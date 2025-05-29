@@ -1,4 +1,6 @@
 blank <- function(annotate=TRUE, bg="white", ...) {
+   oldbg <- par("bg")
+   on.exit(par(bg=oldbg))
    par(bg=bg)
    plot(NA, xlim=c(0,1), ylim=c(0,1), xaxt="n", yaxt="n", xlab="", ylab="", bty="n")
    dots <- list(...)

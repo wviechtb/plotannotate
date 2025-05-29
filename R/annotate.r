@@ -62,13 +62,15 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    cex.pt     <- cex[1]
    cex.txt    <- cex[2]
 
-   # start in freehand draw mode with first color selected and snap=FALSE
+   # start in freehand draw mode
 
    colnum <- 1
    mode <- "draw"
    snap <- FALSE
+   smooth <- FALSE
 
-   on.exit(par(xpd=par("xpd")))
+   oldxpd <- par("xpd")
+   on.exit(par(xpd=oldxpd))
    par(xpd=NA)
 
    #dev.control(displaylist="inhibit")
@@ -81,7 +83,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    if (col.bg == "transparent")
       col.bg <- "white"
 
-   .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+   .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
 
    fun.mousedown <- function(button,x,y) {
       if (button == 2L) {
@@ -93,8 +95,12 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       y.start.ndc <<- y
       x <- grconvertX(x, from="ndc", to="user")
       y <- grconvertY(y, from="ndc", to="user")
-      if (mode == "draw")
-         buffer <<- c(buffer, draw=list(list(x=x, y=y, lwd=lwd.draw)))
+      if (mode %in% c("draw", "ellipse")) {
+         x.coords <<- x
+         y.coords <<- y
+      }
+      #if (mode == "draw")
+      #   buffer <<- c(buffer, draw=list(list(x=x, y=y, lwd=lwd.draw)))
       if (mode == "point") {
          points(x, y, pch=19, col=col[colnum], cex=cex.pt)
          buffer <<- c(buffer, point=list(list(x=x, y=y, cex=cex.pt)))
@@ -115,11 +121,16 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          y.last.ndc <<- y
          x <- grconvertX(x, from="ndc", to="user")
          y <- grconvertY(y, from="ndc", to="user")
+         if (mode %in% c("draw", "ellipse")) {
+            x.coords <<- c(x.coords, x)
+            y.coords <<- c(y.coords, y)
+         }
          if (mode == "draw") {
-            segments(x.last, y.last, x, y, lwd=lwd.draw, col=col[colnum])
-            blen <- length(buffer)
-            buffer[[blen]]$x <<- c(buffer[[blen]]$x, x)
-            buffer[[blen]]$y <<- c(buffer[[blen]]$y, y)
+            if (!smooth)
+               segments(x.last, y.last, x, y, lwd=lwd.draw, col=col[colnum])
+            #blen <- length(buffer)
+            #buffer[[blen]]$x <<- c(buffer[[blen]]$x, x)
+            #buffer[[blen]]$y <<- c(buffer[[blen]]$y, y)
          }
          if (mode == "eraser")
             segments(x.last, y.last, x, y, lwd=lwd.eraser, col=col.bg)
@@ -133,18 +144,38 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       pressed <<- FALSE
       if (mode == "text") {
          mode <<- "type"
-         .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+         .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          return(NULL)
       }
       sameloc <- x.start == x.last && y.start == y.last
       if (sameloc)
          return(NULL)
+      if (mode == "draw") {
+         if (smooth) {
+            xy <- .smooth(x.coords, y.coords)
+            lines(xy$x, xy$y, lwd=lwd.symb, col=col[colnum])
+            buffer <<- c(buffer, draw=list(list(x=xy$x, y=xy$y, lwd=lwd.symb)))
+         } else {
+            buffer <<- c(buffer, draw=list(list(x=x.coords, y=y.coords, lwd=lwd.symb)))
+         }
+         x.coords <<- NULL
+         y.coords <<- NULL
+      }
       if (mode == "rect")
          rect(x.start, y.start, x.last, y.last, lwd=lwd.symb, border=col[colnum])
       if (mode == "circle") {
          x.cent <- (x.start + x.last) / 2
          y.cent <- (y.start + y.last) / 2
-         symbols(x.cent, y.cent, circles=max(abs(x.start-x.last), abs(y.start-y.last))/2, lwd=lwd.symb, fg=col[colnum], inches=FALSE, add=TRUE)
+         x.frac <- abs(x.start.ndc-x.last.ndc)
+         y.frac <- abs(y.start.ndc-y.last.ndc)
+         if (x.frac > y.frac) {
+            radius <- abs(x.start-x.last) / 2
+         } else {
+            asp <- dev.size()[2] / dev.size()[1]
+            radius <- abs(grconvertX(y.start.ndc*asp, from="ndc", to="user") - grconvertX(y.last.ndc*asp, from="ndc", to="user")) / 2
+         }
+         symbols(x.cent, y.cent, circles=radius, lwd=lwd.symb, fg=col[colnum], inches=FALSE, add=TRUE)
+         buffer <<- c(buffer, circle=list(list(x=x.cent, y=y.cent, radius=radius, lwd=lwd.symb)))
       }
       if (mode %in% c("line", "arrow", "arrow2") && snap) {
          slope <- (y.start.ndc - y.last.ndc) / (x.start.ndc - x.last.ndc)
@@ -160,7 +191,19 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          arrows(x.start, y.start, x.last, y.last, lwd=lwd.symb, col=col[colnum])
       if (mode == "arrow2")
          arrows(x.start, y.start, x.last, y.last, lwd=lwd.symb, col=col[colnum], code=3)
-      if (mode %in% c("rect", "circle", "line", "arrow", "arrow2")) {
+      if (mode == "ellipse") {
+         xy <- cbind(x.coords, y.coords)
+         fit <- try(conicfit::EllipseDirectFit(xy), silent=TRUE)
+         if (!inherits(fit, "try-error")) {
+            pars <- AtoG(fit)$ParG
+            xy <- calculateEllipse(pars[1], pars[2], pars[3], pars[4], 180/pi*pars[5], steps=101)
+            lines(xy[,1], xy[,2], lwd=lwd.symb, col=col[colnum])
+            buffer <<- c(buffer, ellipse=list(list(x=xy[,1], y=xy[,2], lwd=lwd.symb)))
+         }
+         x.coords <<- NULL
+         y.coords <<- NULL
+      }
+      if (mode %in% c("rect", "line", "arrow", "arrow2")) {
          buffer <<- c(buffer, list(list(x=c(x.start, x.last), y=c(y.start, y.last), lwd=lwd.symb)))
          if (is.null(names(buffer))) { # if there is nothing in the buffer yet
             names(buffer) <<- mode
@@ -180,7 +223,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "\033" || key == "ctrl-[") {
             txt <<- ""
             mode <<- "text"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
             return(NULL)
          }
 
@@ -209,7 +252,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             buffer <<- c(buffer, text=list(list(x=c(xleft, xright), y=c(ybottom, ytop), txt=txt)))
             txt <<- ""
             mode <<- "text"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
             return(NULL)
          }
 
@@ -230,7 +273,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
          if (is.element(key, 1:ncol)) {
             colnum <<- as.numeric(key)
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
             return(NULL)
          }
 
@@ -243,7 +286,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                         grconvertY(1.00, from="ndc", to="user"))
             rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=NA)
             buffer <<- list()
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
             return(NULL)
          }
 
@@ -254,13 +297,13 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                lwd.draw <<- max(1, lwd.draw - 1)
             if (mode == "eraser")
                lwd.eraser <<- max(1, lwd.eraser - 5)
-               if (mode %in% c("rect", "circle", "line", "arrow", "arrow2"))
+               if (mode %in% c("rect", "circle", "ellipse", "line", "arrow", "arrow2"))
                lwd.symb <<- max(1, lwd.symb - 1)
             if (mode == "point")
                cex.pt <<- max(0.5, cex.pt - 0.5)
             if (mode == "text")
                cex.txt <<- max(0.5, cex.txt - 0.5)
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
             return(NULL)
          }
 
@@ -269,13 +312,13 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                lwd.draw <<- lwd.draw + 1
             if (mode == "eraser")
                lwd.eraser <<- lwd.eraser + 5
-            if (mode %in% c("rect", "circle", "line", "arrow", "arrow2"))
+            if (mode %in% c("rect", "circle", "ellipse", "line", "arrow", "arrow2"))
                lwd.symb <<- lwd.symb + 1
             if (mode == "point")
                cex.pt <<- cex.pt + 0.5
             if (mode == "text")
                cex.txt <<- cex.txt + 0.5
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
             return(NULL)
          }
 
@@ -283,53 +326,61 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
          if (key == "d") {
             mode <<- "draw"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "p") {
             mode <<- "point"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "e") {
             mode <<- "eraser"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "l") {
             mode <<- "line"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "a") {
             mode <<- "arrow"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "A") {
             mode <<- "arrow2"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "s") {
-            snap <<- !snap
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            if (mode == "draw")
+               smooth <<- !smooth
+            if (mode %in% c("line", "arrow", "arrow2"))
+               snap <<- !snap
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "r") {
             mode <<- "rect"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "c") {
             mode <<- "circle"
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
+         }
+
+         if (key == "o") {
+            mode <<- "ellipse"
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "t") {
             mode <<- "text"
             txt <<- ""
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          # z and x for replaying and recording the plot
@@ -337,7 +388,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "z") {
             replayPlot(sav)
             buffer <<- list()
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          if (key == "x") {
@@ -351,7 +402,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             info <<- !info
             if (!info)
                .clear(TRUE, col.bg)
-            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, info)
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 
          #if (key == "F12")
@@ -366,18 +417,12 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             yb <- buffer[[blen]]$y
             lwdb <- buffer[[blen]]$lwd
             cexb <- buffer[[blen]]$cex
-            if (type == "draw") {
-               for (i in 1:(length(xb)-1)) {
-                  segments(xb[i], yb[i], xb[i+1], yb[i+1], lwd=lwdb+4, col=col.bg)
-               }
-            }
+            if (type %in% c("draw", "ellipse"))
+               lines(xb, yb, lwd=lwdb+4, col=col.bg)
             if (type == "rect")
                rect(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, border=col.bg)
-            if (type == "circle") {
-               x.cent <- (xb[1] + xb[2]) / 2
-               y.cent <- (yb[1] + yb[2]) / 2
-               symbols(x.cent, y.cent, circles=max(abs(xb[1]-xb[2]), abs(yb[1]-yb[2]))/2, lwd=lwdb+4, fg=col.bg, inches=FALSE, add=TRUE)
-            }
+            if (type == "circle")
+               symbols(xb[1], yb[1], circles=buffer[[blen]]$radius, lwd=lwdb+4, fg=col.bg, inches=FALSE, add=TRUE)
             if (type == "point")
                points(xb, yb, pch=19, col=col.bg, cex=cexb*1.2)
             if (type == "line")
@@ -408,6 +453,8 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    y.last.ndc  <- NA_real_
    txt <- ""
    buffer <- list()
+   x.coords <- NULL
+   y.coords <- NULL
 
    getGraphicsEvent(prompt="", onMouseDown=fun.mousedown, onMouseMove=fun.mousemove, onMouseUp=fun.mouseup, onKeybd=fun.key)
 
