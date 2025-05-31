@@ -27,14 +27,14 @@
       lwd <- lwd.draw
    if (mode == "eraser")
       lwd <- lwd.eraser
-   if (mode %in% c("rect", "circle", "ellipse", "line", "arrow", "arrow2"))
+   if (mode %in% c("rect", "circle", "circle2", "ellipse", "line", "arrow", "arrow2"))
       lwd <- lwd.symb
    if (mode == "point")
       cex.pt <- cex.pt
    if (mode %in% c("text", "type"))
       cex.txt <- cex.txt
 
-   if (mode %in% c("draw", "eraser", "rect", "circle", "ellipse", "line", "arrow", "arrow2"))
+   if (mode %in% c("draw", "eraser", "rect", "circle", "circle2", "ellipse", "line", "arrow", "arrow2"))
       txt <- paste0("Line width: ", lwd)
    if (mode == "draw" && smooth)
       txt <- paste0(txt, " (smooth)")

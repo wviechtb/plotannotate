@@ -69,8 +69,10 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    snap <- FALSE
    smooth <- FALSE
 
+   oldusr <- par("usr")
    oldxpd <- par("xpd")
-   on.exit(par(xpd=oldxpd))
+   on.exit(par(usr=oldusr, xpd=oldxpd))
+   par(usr=c(0,1,0,1))
    par(xpd=NA)
 
    #dev.control(displaylist="inhibit")
@@ -95,12 +97,10 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       y.start.ndc <<- y
       x <- grconvertX(x, from="ndc", to="user")
       y <- grconvertY(y, from="ndc", to="user")
-      if (mode %in% c("draw", "ellipse")) {
+      if (mode %in% c("draw", "ellipse", "circle2")) {
          x.coords <<- x
          y.coords <<- y
       }
-      #if (mode == "draw")
-      #   buffer <<- c(buffer, draw=list(list(x=x, y=y, lwd=lwd.draw)))
       if (mode == "point") {
          points(x, y, pch=19, col=col[colnum], cex=cex.pt)
          buffer <<- c(buffer, point=list(list(x=x, y=y, cex=cex.pt)))
@@ -121,16 +121,13 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          y.last.ndc <<- y
          x <- grconvertX(x, from="ndc", to="user")
          y <- grconvertY(y, from="ndc", to="user")
-         if (mode %in% c("draw", "ellipse")) {
+         if (mode %in% c("draw", "ellipse", "circle2")) {
             x.coords <<- c(x.coords, x)
             y.coords <<- c(y.coords, y)
          }
          if (mode == "draw") {
             if (!smooth)
                segments(x.last, y.last, x, y, lwd=lwd.draw, col=col[colnum])
-            #blen <- length(buffer)
-            #buffer[[blen]]$x <<- c(buffer[[blen]]$x, x)
-            #buffer[[blen]]$y <<- c(buffer[[blen]]$y, y)
          }
          if (mode == "eraser")
             segments(x.last, y.last, x, y, lwd=lwd.eraser, col=col.bg)
@@ -195,10 +192,20 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          xy <- cbind(x.coords, y.coords)
          fit <- try(conicfit::EllipseDirectFit(xy), silent=TRUE)
          if (!inherits(fit, "try-error")) {
-            pars <- AtoG(fit)$ParG
-            xy <- calculateEllipse(pars[1], pars[2], pars[3], pars[4], 180/pi*pars[5], steps=101)
+            pars <- conicfit::AtoG(fit)$ParG
+            xy <- conicfit::calculateEllipse(pars[1], pars[2], pars[3], pars[4], 180/pi*pars[5], steps=101)
             lines(xy[,1], xy[,2], lwd=lwd.symb, col=col[colnum])
             buffer <<- c(buffer, ellipse=list(list(x=xy[,1], y=xy[,2], lwd=lwd.symb)))
+         }
+         x.coords <<- NULL
+         y.coords <<- NULL
+      }
+      if (mode == "circle2") {
+         xy <- cbind(x.coords, y.coords)
+         fit <- try(conicfit::CircleFitByPratt(xy), silent=TRUE)
+         if (!inherits(fit, "try-error")) {
+            symbols(fit[1], fit[2], circles=fit[3], lwd=lwd.symb, fg=col[colnum], inches=FALSE, add=TRUE)
+            buffer <<- c(buffer, circle=list(list(x=fit[1], y=fit[2], radius=fit[3], lwd=lwd.symb)))
          }
          x.coords <<- NULL
          y.coords <<- NULL
@@ -297,7 +304,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                lwd.draw <<- max(1, lwd.draw - 1)
             if (mode == "eraser")
                lwd.eraser <<- max(1, lwd.eraser - 5)
-               if (mode %in% c("rect", "circle", "ellipse", "line", "arrow", "arrow2"))
+               if (mode %in% c("rect", "circle", "circle2", "ellipse", "line", "arrow", "arrow2"))
                lwd.symb <<- max(1, lwd.symb - 1)
             if (mode == "point")
                cex.pt <<- max(0.5, cex.pt - 0.5)
@@ -312,7 +319,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                lwd.draw <<- lwd.draw + 1
             if (mode == "eraser")
                lwd.eraser <<- lwd.eraser + 5
-            if (mode %in% c("rect", "circle", "ellipse", "line", "arrow", "arrow2"))
+            if (mode %in% c("rect", "circle", "circle2", "ellipse", "line", "arrow", "arrow2"))
                lwd.symb <<- lwd.symb + 1
             if (mode == "point")
                cex.pt <<- cex.pt + 0.5
@@ -369,6 +376,11 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
          if (key == "c") {
             mode <<- "circle"
+            .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
+         }
+
+         if (key == "C") {
+            mode <<- "circle2"
             .info(mode, col, colnum, lwd.draw, lwd.eraser, lwd.symb, cex.pt, cex.txt, snap, smooth, info)
          }
 

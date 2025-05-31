@@ -30,7 +30,8 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TR
    \verb{A}   \tab \ics \tab Change to arrow drawing mode with arrowheads at both ends. \cr
    \verb{r}   \tab \ics \tab Change to rectangle drawing mode. Works like the line drawing mode. \cr
    \verb{c}   \tab \ics \tab Change to circle drawing mode. Works like the line drawing mode. The larger of the x- or y-axis distance determines the radius of the circle. \cr
-   \verb{o}   \tab \ics \tab Change to ellipses drawing mode. Works like the freehand drawing mode, except that the nearest ellipse conforming to the input coordinates is drawn. \cr
+   \verb{C}   \tab \ics \tab Change to circle drawing mode. Works like the freehand drawing mode, except that the nearest circle corresponding to the input coordinates is drawn. Note that the circle is drawn after releasing the mouse button. \cr
+   \verb{o}   \tab \ics \tab Change to ellipse drawing mode. Works like the freehand drawing mode, except that the nearest ellipse corresponding to the input coordinates is drawn. Note that the ellipse is drawn after releasing the mouse button. \cr
    \verb{t}   \tab \ics \tab Change to text drawing mode. Click on a location (which enters type mode), type some text, and after hitting \verb{enter} the text is added next to the click location. Note that the text typed is not shown until hitting \verb{enter}. The \verb{escape} key cancels the text entry. \cr
    \verb{-+}  \tab \ics \tab Decrease/increase the line width or point/text size. The default sizes are set by the \code{lwd} and \code{cex} arguments. Can also use \verb{=} instead of \verb{+} or the down and up arrow keys for the same purpose. \cr
    \verb{s}   \tab \ics \tab For freehand drawing, toggles smooth mode, so that the line is drawn after running a smoother over the input coordinates. For lines and arrows, toggle snap mode, so that lines/arrows are drawn exactly horizontally/vertically. \cr
@@ -44,7 +45,7 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TR
 
    When \code{info=TRUE} (the default), then information about the drawing mode and colors are shown at the top left while annotating a plot. Note that this information may overlap with the plot title or other elements.
 
-   After annotating a plot, it should be possible to save the plot including the annotations with \code{\link{dev.print}}, for examaple using something like \code{dev.print(device=png, filename="plot.png", width=<width>, height=<height>)}. However, by default, the plot will have a transparent background color, which is typically not what is desired. To avoid this issue, one can use \code{par(bg="white")} before creating the plot to set a white background color.
+   After annotating a plot, it should be possible to save the plot including the annotations with \code{\link{dev.print}}, for example using something like \code{dev.print(device=png, filename="plot.png", width=<width>, height=<height>)}. However, by default, the plot will have a transparent background color, which is typically not what is desired. To avoid this issue, one can use \code{par(bg="white")} before creating the plot to set a white background color.
 
 }
 \value{
