@@ -22,6 +22,5 @@ blank(annotate=TRUE, bg="white", \dots)
    Wolfgang Viechtbauer (\email{wvb@wvbauer.com}).
 }
 \examples{
-\donttest{
-blank()}
+blank()
 }

@@ -1,4 +1,4 @@
-# plotannotate 1.3-0 (2025-05-31)
+# plotannotate 1.3-0 (2025-06-17)
 
 - improved the circle drawing code, so that either the x- or y-axis distance properly determines the circle radius
 
@@ -7,6 +7,8 @@
 - added a smooth mode for freehand drawing
 
 - much faster undo for freehand drawing
+
+- can also click on the colors to select them
 
 # plotannotate 1.2-0 (2025-05-22)
 

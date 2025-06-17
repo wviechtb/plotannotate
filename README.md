@@ -3,7 +3,7 @@ plotannotate: An R Package to Annotate Plots
 
 ## Description
 
-The `plotannotate` package allows annotating plots created with 'base R graphics'. The function for this purpose is called `annotate`. After creating a plot, for example with `plot()`, the command `annotate()` enters a freehand drawing mode where one can draw on the plot with the mouse (or some other input device). Various symbols (points, lines, arrows, rectangles, circles) and text can also be added. Pressing `q` or the right mouse button terminates the annotation mode.
+The `plotannotate` package allows annotating plots created with 'base R graphics'. The function for this purpose is called `annotate`. After creating a plot, for example with `plot()`, the command `annotate()` enters a freehand drawing mode where one can draw on the plot with the mouse (or some other input device). Various symbols (points, lines, arrows, rectangles, circles, ellipses) and text can also be added. Pressing `q` or the right mouse button terminates the annotation mode.
 
 The functionality provided by the package is especially useful when teaching (e.g., to visually explain certain plot elements), but can also be used for creating quick sketches.
 

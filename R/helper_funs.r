@@ -16,6 +16,12 @@
               grconvertY(0.99, from="ndc", to="user"))
 
    txt <- paste0("Mode: ", mode)
+
+   if (mode == "draw" && smooth)
+      txt <- paste0(txt, " (smooth)")
+   if (mode %in% c("line", "arrow", "arrow2") && snap)
+      txt <- paste0(txt, " (snap)")
+
    text(cords[1], cords[2], txt, pos=4, cex=0.5/par("cex"))
 
    # add lwd / cex text
@@ -33,13 +39,8 @@
       cex.pt <- cex.pt
    if (mode %in% c("text", "type"))
       cex.txt <- cex.txt
-
    if (mode %in% c("draw", "eraser", "rect", "circle", "circle2", "ellipse", "line", "arrow", "arrow2"))
       txt <- paste0("Line width: ", lwd)
-   if (mode == "draw" && smooth)
-      txt <- paste0(txt, " (smooth)")
-   if (mode %in% c("line", "arrow", "arrow2") && snap)
-      txt <- paste0(txt, " (snap)")
    if (mode == "point")
       txt <- paste0("Point size: ", cex.pt)
    if (mode %in% c("text", "type"))
@@ -49,7 +50,9 @@
 
    # add color boxes
 
-   xpos <- seq(0.11, 0.11 + 9 * 0.024, length.out=9)
+   xpos <- 0.11 + 0:9 * 0.024
+
+   colpos <- matrix(NA_real_, nrow=length(col), ncol=4)
 
    for (i in 1:length(col)) {
 
@@ -60,12 +63,14 @@
 
       rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col[i], border=col.bg, lwd=6)
 
+      colpos[i,] <- c(cords1, cords2)
+
       if (i == colnum)
          rect(cords1[1], cords1[2], cords2[1], cords2[2], border="black", lwd=2)
 
    }
 
-   return(invisible())
+   return(colpos)
 
 }
 
