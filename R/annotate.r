@@ -636,7 +636,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                         grconvertY(1.00, from="ndc", to="user"))
             rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=NA)
             buffer <<- list()
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, drawall=TRUE)
             return(NULL)
          }
 
