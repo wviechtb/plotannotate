@@ -33,7 +33,7 @@
 
    # add lwd / cex text
 
-   if (drawall || any(lwd != old$lwd) || any(cex != old$cex)) {
+   if (drawall || mode != old$mode || any(lwd != old$lwd) || any(cex != old$cex)) {
 
       .clear(info, col.bg, x1=0.00, y1=0.975, x2=0.118, y2=0.985)
 

@@ -141,9 +141,20 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                }
             }
             if (modenum == 2) {
-               mode <<- "point"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
-               old[["mode"]] <<- mode
+               if (mode == "point") {
+                  pchs <- c(19, 15, 18, 21)
+                  pchnum <- which(pch == pchs)
+                  pchnum <- pchnum + 1
+                  if (pchnum > 4)
+                     pchnum <- 1
+                  pch <<- pchs[pchnum]
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
+                  old[["pch"]] <<- pch
+               } else {
+                  mode <<- "point"
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
+                  old[["mode"]] <<- mode
+               }
             }
             if (modenum == 3) {
                if (mode == "line") {
@@ -227,7 +238,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       }
       if (mode == "point") {
          points(x, y, pch=pch, col=col[colnum], cex=cex[1]/par.cex)
-         buffer <<- c(buffer, point=list(list(x=x, y=y, cex=cex[1]/par.cex)))
+         buffer <<- c(buffer, point=list(list(x=x, y=y, cex=cex[1]/par.cex, pch=ifelse(pch==21,19,pch))))
          pressed <<- FALSE
       }
       if (mode == "text")
@@ -539,7 +550,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             if (mode == "point")
                cex[1] <<- max(0.5, cex[1] - 0.5)
             if (mode == "text")
-               cex[2] <<- max(0.5, cex[2] - 0.5)
+               cex[2] <<- max(0.5, cex[2] - 0.25)
             boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
             old[["lwd"]] <<- lwd
             old[["cex"]] <<- cex
@@ -556,7 +567,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             if (mode == "point")
                cex[1] <<- cex[1] + 0.5
             if (mode == "text")
-               cex[2] <<- cex[2] + 0.5
+               cex[2] <<- cex[2] + 0.25
             boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
             old[["lwd"]] <<- lwd
             old[["cex"]] <<- cex
@@ -575,6 +586,8 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                if (pchnum < 1)
                   pchnum <- 4
                pch <<- pchs[pchnum]
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
+               old[["pch"]] <<- pch
             }
             if (mode %in% c("line", "arrow", "arrow2", "rect", "circle", "circle2", "ellipse")) {
                lty <<- lty + ifelse(key == "Left", -1, +1)
@@ -582,9 +595,9 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                   lty <<- 1
                if (lty < 1)
                   lty <<- 3
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
+               old[["lty"]] <<- lty
             }
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex)
-            old[["lty"]] <<- lty
             return(NULL)
          }
 
@@ -620,7 +633,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             if (type == "circle")
                symbols(xb[1], yb[1], circles=buffer[[blen]]$radius, lwd=lwdb+4, fg=col.bg, inches=FALSE, add=TRUE)
             if (type == "point")
-               points(xb, yb, pch=19, col=col.bg, cex=cexb*1.2)
+               points(xb, yb, pch=buffer[[blen]]$pch, col=col.bg, cex=cexb*1.2)
             if (type == "line")
                segments(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg)
             if (type == "arrow")
