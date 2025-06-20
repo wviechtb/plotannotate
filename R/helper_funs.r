@@ -1,4 +1,4 @@
-.info <- function(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, drawall=FALSE) {
+.info <- function(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=FALSE) {
 
    if (!info)
       return(invisible())
@@ -11,15 +11,11 @@
    if (drawall)
       .clear(info, col.bg)
 
-   dims <- dev.size(units="px")
-   asp <- dims[1] / dims[2]
-   mult <- max(dims) / 1800
-
    # add mode text
 
    if (drawall || mode != old$mode || (mode %in% c("draw", "line", "arrow", "arrow2") && (snap != old$snap || smooth != old$smooth))) {
 
-      .clear(info, col.bg, x1=0.00, y1=0.985, x2=0.10, y2=1.00)
+      .clear(info, col.bg, x1=0.00, y1=0.985, x2=0.118, y2=1.00)
 
       cords <- c(grconvertX(0.00, from="ndc", to="user"),
                  grconvertY(0.99, from="ndc", to="user"))
@@ -39,7 +35,7 @@
 
    if (drawall || any(lwd != old$lwd) || any(cex != old$cex)) {
 
-      .clear(info, col.bg, x1=0.00, y1=0.975, x2=0.10, y2=0.985)
+      .clear(info, col.bg, x1=0.00, y1=0.975, x2=0.118, y2=0.985)
 
       cords <- c(grconvertX(0.00, from="ndc", to="user"),
                  grconvertY(0.98, from="ndc", to="user"))
@@ -62,7 +58,7 @@
    # add tool boxes
 
    modes <- c("draw", "point", "line", "arrow", "arrow2", "rect", "circle", "ellipse", "text", "eraser")
-   xpos <- 0.11 + 0:9 * 0.024
+   xpos <- 0.12 + 0:9 * 0.024
 
    modesel <- mode
 
@@ -106,86 +102,86 @@
          next
 
       if (i == 1 && (drawall || (mode == "draw" || old$mode == "draw"))) { # freehand drawing / with smoothing
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          if (smooth) {
-            lines(grconvertX(dsx, from="ndc", to="user"), grconvertY(dsy, from="ndc", to="user"), lwd=lwd[1]*mult)
+            lines(grconvertX(dsx, from="ndc", to="user"), grconvertY(dsy, from="ndc", to="user"), lwd=lwd[1]*icex)
          } else {
-            lines(grconvertX(dx, from="ndc", to="user"), grconvertY(dy, from="ndc", to="user"), lwd=lwd[1]*mult)
+            lines(grconvertX(dx, from="ndc", to="user"), grconvertY(dy, from="ndc", to="user"), lwd=lwd[1]*icex)
          }
          #text(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
          #     grconvertY(0.985, from="ndc", to="user"), ifelse(smooth, "S", "D"), cex=1/par("cex"))
       }
 
       if (i == 2 && (drawall || (mode == "point" || old$mode == "point" || cex[1] != old$cex[1]))) { # point
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          points(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
-                grconvertY(0.985, from="ndc", to="user"), pch=19, cex=min(cex[1],2)/par("cex")*mult)
+                grconvertY(0.985, from="ndc", to="user"), pch=19, cex=min(cex[1],2)/par("cex")*icex)
       }
 
       if (i == 3 && (drawall || (mode == "line" || old$mode == "line" || snap != old$snap || lwd[2] != old$lwd[2] || lty != old$lty))) { # line / with snap mode
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          if (snap) {
             segments(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                      grconvertY(0.985, from="ndc", to="user"),
                      grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                     grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*mult, lty=lty)
+                     grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*icex, lty=lty)
          } else {
             segments(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                      grconvertY(0.980, from="ndc", to="user"),
                      grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                     grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*mult, lty=lty)
+                     grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*icex, lty=lty)
          }
       }
 
       if (i == 4 && (drawall || (mode == "arrow" || old$mode == "arrow" || snap != old$snap || lwd[2] != old$lwd[2]))) { # arrow / with snap mode
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          if (snap) {
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.985, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*mult, length=0.10)
+                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*icex, length=0.10)
          } else {
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.980, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*mult, length=0.10)
+                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*icex, length=0.10)
          }
       }
 
       if (i == 5 && (drawall || (mode == "arrow2" || old$mode == "arrow2" || snap != old$snap || lwd[2] != old$lwd[2]))) { # double-sided arrow / with snap mode
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          if (snap) {
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.985, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*mult, length=0.10, code=3)
+                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*icex, length=0.10, code=3)
          } else {
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.980, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*mult, length=0.10, code=3)
+                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*icex, length=0.10, code=3)
          }
       }
 
       if (i == 6 && (drawall || (mode == "rect" || old$mode == "rect" || lwd[2] != old$lwd[2]))) { # rectangle
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          rect(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
               grconvertY(0.980, from="ndc", to="user"),
               grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-              grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8))
+              grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*icex)
       }
 
       if (i == 7 && (drawall || (mode %in% c("circle", "circle2")) || old$mode %in% c("circle", "circle2") || lwd[2] != old$lwd[2])) { # circle / circle2
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          points(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
-                grconvertY(0.985, from="ndc", to="user"), pch=21, cex=1.5/par("cex"), lwd=min(lwd[2],8)*mult)
+                grconvertY(0.985, from="ndc", to="user"), pch=21, cex=1.5/par("cex"), lwd=min(lwd[2],8)*icex)
          if (mode == "circle2") {
             points(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
                    grconvertY(0.985, from="ndc", to="user"), pch=19, cex=0.4/par("cex"), col="gray60")
@@ -193,34 +189,34 @@
       }
 
       if (i == 8 && (drawall || (mode == "ellipse" || old$mode == "ellipse") || lwd[2] != old$lwd[2])) { # ellipse
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          xy <- conicfit::calculateEllipse(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
                                           grconvertY(0.985, from="ndc", to="user"), 0.01, 0.005, 180/pi*70, steps=101)
-         lines(xy[,1], xy[,2], lwd=min(lwd[2],8)*mult)
+         lines(xy[,1], xy[,2], lwd=min(lwd[2],8)*icex)
       }
 
       if (i == 9  && (drawall || (mode %in% c("text", "type") || old$mode %in% c("text", "type") || cex[2] != old$cex[2]))) { # text / type
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          text(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
-              grconvertY(0.985, from="ndc", to="user"), "T", font=2, cex=min(1.2, cex[2])/par("cex")*mult)
+              grconvertY(0.985, from="ndc", to="user"), "T", font=2, cex=min(1.2, cex[2])/par("cex")*icex)
       }
 
       if (i == 10 && (drawall || (mode == "eraser" || old$mode == "eraser" || lwd[3] != old$lwd[3]))) { # eraser
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          xl <- xpos[i] + 0.005
          xr <- xpos[i] + 0.02 - 0.005
          yb <- 0.975 + 0.005
          yt <- 0.995 - 0.005
          lines(grconvertX(c(xl + 0.004, xr, xr - 0.004, xl, xl + 0.004), from="ndc", to="user"),
                grconvertY(c(yb, yt - 0.004, yt, yb + 0.004, yb), from="ndc", to="user"),
-               lwd=max(0.5, min(0.1*lwd[3],8))*mult)
+               lwd=max(0.5, min(0.1*lwd[3],8))*icex)
       }
 
       if (i == modenum)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], border="black", lwd=2*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], border="black", lwd=2*icex)
 
    }
 
@@ -242,13 +238,11 @@
       if (!drawall && colnum == old$colnum)
          next
 
-      if (drawall || (colnum == i || old$colnum == i)) {
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*mult)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col[i], border=col.bg, lwd=6*mult)
-      }
+      if (drawall || old$colnum == i)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col[i], border=col.bg, lwd=10*icex)
 
       if (i == colnum)
-         rect(cords1[1], cords1[2], cords2[1], cords2[2], border="black", lwd=2*mult)
+         rect(cords1[1], cords1[2], cords2[1], cords2[2], border="black", lwd=2*icex)
 
    }
 

@@ -1,4 +1,4 @@
-annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TRUE) {
+annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TRUE, icex=1) {
 
    # check for interactive mode
 
@@ -86,11 +86,17 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
    # draw initial info
 
-   boxpos <- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, drawall=TRUE)
+   boxpos <- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=TRUE)
 
    # record plot in its current state
 
    sav <- recordPlot()
+
+   # set icex
+
+   dims <- dev.size(units="px")
+   #asp <- dims[1] / dims[2]
+   icex <- icex * min(dims) / 1800
 
    # create the mouse and keyboard event handlers
 
@@ -102,12 +108,12 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       if (button == 1L) {
          if (mode == "draw") {
             smooth <<- !smooth
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["smooth"]] <<- smooth
          }
          if (mode %in% c("line", "arrow", "arrow2")) {
             snap <<- !snap
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["snap"]] <<- snap
          }
          pressed <<- FALSE
@@ -125,55 +131,55 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             if (modenum == 1) {
                if (mode == "draw") {
                   smooth <<- !smooth
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["smooth"]] <<- smooth
                } else {
                   mode <<- "draw"
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["mode"]] <<- mode
                }
             }
             if (modenum == 2) {
                mode <<- "point"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
             if (modenum == 3) {
                if (mode == "line") {
                   snap <<- !snap
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["snap"]] <<- snap
                } else {
                   mode <<- "line"
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["mode"]] <<- mode
                }
             }
             if (modenum == 4) {
                if (mode == "arrow") {
                   snap <<- !snap
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["snap"]] <<- snap
                } else {
                   mode <<- "arrow"
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["mode"]] <<- mode
                }
             }
             if (modenum == 5) {
                if (mode == "arrow2") {
                   snap <<- !snap
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["snap"]] <<- snap
                } else {
                   mode <<- "arrow2"
-                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+                  boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                   old[["mode"]] <<- mode
                }
             }
             if (modenum == 6) {
                mode <<- "rect"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
             if (modenum == 7) {
@@ -184,22 +190,22 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                } else {
                   mode <<- "circle"
                }
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
             if (modenum == 8) {
                mode <<- "ellipse"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
             if (modenum == 9) {
                mode <<- "text"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
             if (modenum == 10) {
                mode <<- "eraser"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
             pressed <<- FALSE
@@ -208,7 +214,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          colsel <- apply(boxpos[[2]], 1, function(pos) x > pos[1] && x < pos[3] && y > pos[2] && y < pos[4])
          if (any(colsel)) {
             colnum <<- which(colsel)
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["colnum"]] <<- colnum
             pressed <<- FALSE
             return(NULL)
@@ -262,7 +268,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       pressed <<- FALSE
       if (mode == "text") {
          mode <<- "type"
-         boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+         boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
          old[["mode"]] <<- mode
          return(NULL)
       }
@@ -355,7 +361,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "\033" || key == "ctrl-[") {
             txt <<- ""
             mode <<- "text"
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
             return(NULL)
          }
@@ -385,7 +391,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             buffer <<- c(buffer, text=list(list(x=c(xleft, xright), y=c(ybottom, ytop), txt=txt)))
             txt <<- ""
             mode <<- "text"
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
             return(NULL)
          }
@@ -408,7 +414,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
          if (is.element(key, 1:ncol)) {
             colnum <<- as.numeric(key)
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["colnum"]] <<- colnum
             return(NULL)
          }
@@ -418,29 +424,29 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "d") {
             if (mode == "draw") {
                smooth <<- !smooth
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["smooth"]] <<- smooth
             } else {
                mode <<- "draw"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
          }
 
          if (key == "p") {
             mode <<- "point"
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
          }
 
          if (key == "l") {
             if (mode == "line") {
                snap <<- !snap
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["snap"]] <<- snap
             } else {
                mode <<- "line"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
          }
@@ -448,11 +454,11 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "a") {
             if (mode == "arrow") {
                snap <<- !snap
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["snap"]] <<- snap
             } else {
                mode <<- "arrow"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
          }
@@ -460,18 +466,18 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "A") {
             if (mode == "arrow2") {
                snap <<- !snap
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["snap"]] <<- snap
             } else {
                mode <<- "arrow2"
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["mode"]] <<- mode
             }
          }
 
          if (key == "r") {
             mode <<- "rect"
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
          }
 
@@ -483,7 +489,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             } else {
                mode <<- "circle"
             }
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
          }
 
@@ -495,25 +501,25 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             } else {
                mode <<- "circle2"
             }
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
          }
 
          if (key == "o") {
             mode <<- "ellipse"
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
          }
 
          if (key == "t") {
             mode <<- "text"
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
          }
 
          if (key == "e") {
             mode <<- "eraser"
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["mode"]] <<- mode
          }
 
@@ -533,7 +539,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                cex[1] <<- max(0.5, cex[1] - 0.5)
             if (mode == "text")
                cex[2] <<- max(0.5, cex[2] - 0.5)
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["lwd"]] <<- lwd
             old[["cex"]] <<- cex
             return(NULL)
@@ -550,7 +556,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                cex[1] <<- cex[1] + 0.5
             if (mode == "text")
                cex[2] <<- cex[2] + 0.5
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["lwd"]] <<- lwd
             old[["cex"]] <<- cex
             return(NULL)
@@ -562,7 +568,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             lty <<- lty + 1
             if (lty > 3)
                lty <<- 1
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
             old[["lty"]] <<- lty
             return(NULL)
          }
@@ -572,12 +578,12 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "s") {
             if (mode == "draw") {
                smooth <<- !smooth
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["smooth"]] <<- smooth
             }
             if (mode %in% c("line", "arrow", "arrow2")) {
                snap <<- !snap
-               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info)
+               boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex)
                old[["snap"]] <<- snap
             }
             return(NULL)
@@ -617,7 +623,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          if (key == "z") {
             replayPlot(sav)
             buffer <<- list()
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, drawall=TRUE)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=TRUE)
             return(NULL)
          }
 
@@ -636,7 +642,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
                         grconvertY(1.00, from="ndc", to="user"))
             rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=NA)
             buffer <<- list()
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, drawall=TRUE)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=TRUE)
             return(NULL)
          }
 

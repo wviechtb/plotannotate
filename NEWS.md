@@ -1,4 +1,4 @@
-# plotannotate 1.3-0 (2025-06-19)
+# plotannotate 1.3-0 (2025-06-20)
 
 - improved the circle drawing code, so that either the x- or y-axis distance properly determines the circle radius
 
@@ -11,6 +11,8 @@
 - can now select from three different line types
 
 - info at the top now also shows the drawing mode; can click on the boxes to select the mode / color
+
+- added `icex` argument for rescaling the visual information
 
 # plotannotate 1.2-0 (2025-05-22)
 

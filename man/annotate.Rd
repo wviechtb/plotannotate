@@ -12,6 +12,7 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TR
    \item{lwd}{a numeric vector to specify the line width for freehand drawing, for symbols, and the eraser.}
    \item{cex}{a numeric vector to specify the size of points and text.}
    \item{info}{a logical to specify whether visual information about the drawing mode and colors should be shown while annotating a plot.}
+   \item{icex}{a numeric value to specify a multiplication factor for the visual information.}
 }
 \details{
 
@@ -55,9 +56,9 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TR
    \verb{i}   \tab \ics \tab Toggle \code{info} on/off. \cr
    }
 
-   When \code{info=TRUE} (the default), then information about the drawing mode and colors are shown at the top left while annotating a plot. Note that this information may overlap with the plot title or other elements.
+   When \code{info=TRUE} (the default), then visual information about the drawing mode and colors are shown at the top left while annotating a plot. This information may overlap with the plot title or other elements. One can use the \code{icex} argument to rescale the visual information to better match the resolution of the plot. Note that the boxes for the drawing modes and colors are clickable.
 
-   Note that resizing plots while or after the \code{annotate} function has been run is not recommended (all annotations and visual elements need to be redrawn, which can take some time, especially when a lot of annotations have been added to the plot).
+   Resizing plots while or after the \code{annotate} function has been run is not recommended (all annotations and visual elements need to be redrawn, which can take some time, especially when a lot of annotations have been added to the plot).
 
    After annotating a plot, it should be possible to save the plot including the annotations with \code{\link{dev.print}}, for example using something like \code{dev.print(device=png, filename="plot.png", width=<width>, height=<height>)}. However, by default, the plot will have a transparent background color, which is typically not what is desired. To avoid this issue, use \code{par(bg="white")} before creating the plot to set a white background color.
 
