@@ -84,6 +84,12 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
 
    old <- list(mode=mode, colnum=colnum, lwd=lwd, cex=cex, snap=snap, smooth=smooth, lty=lty)
 
+   # set icex
+
+   dims <- dev.size(units="px")
+   #asp <- dims[1] / dims[2]
+   icex <- icex * min(dims) / 1800
+
    # draw initial info
 
    boxpos <- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=TRUE)
@@ -91,12 +97,6 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    # record plot in its current state
 
    sav <- recordPlot()
-
-   # set icex
-
-   dims <- dev.size(units="px")
-   #asp <- dims[1] / dims[2]
-   icex <- icex * min(dims) / 1800
 
    # create the mouse and keyboard event handlers
 
@@ -652,7 +652,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             info <<- !info
             if (!info)
                .clear(TRUE, col.bg)
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=TRUE)
             return(NULL)
          }
 
