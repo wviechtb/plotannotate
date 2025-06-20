@@ -264,11 +264,9 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       if (mode == "draw") {
          if (!smooth)
             segments(x.last, y.last, x, y, lwd=lwd[1], col=col[colnum])
-            #lines(c(x.last, x), c(y.last, y), lwd=lwd[1], col=col[colnum])
       }
       if (mode == "eraser")
          segments(x.last, y.last, x, y, lwd=lwd[3], col=col.bg)
-         #lines(c(x.last, x), c(y.last, y), lwd=lwd[3], col=col.bg)
       x.last <<- x
       y.last <<- y
       return(NULL)
@@ -326,17 +324,14 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
          segments(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty)
       if (mode == "arrow")
          .arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty)
-         #arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum])
       if (mode == "arrow2")
          .arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty, code=3)
-         #arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], code=3)
       if (mode == "ellipse") {
          xy <- cbind(x.coords, y.coords)
          fit <- try(conicfit::EllipseDirectFit(xy), silent=TRUE)
          if (!inherits(fit, "try-error")) {
             pars <- conicfit::AtoG(fit)$ParG
             xy <- conicfit::calculateEllipse(pars[1], pars[2], pars[3], pars[4], 180/pi*pars[5], steps=100)
-            #lines(xy[,1], xy[,2], lwd=lwd[2], col=col[colnum])
             polygon(c(xy[,1],rev(xy[,1])), c(xy[,2], rev(xy[,2])), lwd=lwd[2], border=col[colnum], lty=lty)
             buffer <<- c(buffer, ellipse=list(list(x=xy[,1], y=xy[,2], lwd=lwd[2])))
          }
@@ -386,7 +381,6 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             } else {
                txt <<- ""
             }
-            #print(txt)
             return(NULL)
          }
 

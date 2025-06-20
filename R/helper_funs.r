@@ -109,8 +109,6 @@
          } else {
             lines(grconvertX(dx, from="ndc", to="user"), grconvertY(dy, from="ndc", to="user"), lwd=lwd[1]*icex)
          }
-         #text(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
-         #     grconvertY(0.985, from="ndc", to="user"), ifelse(smooth, "S", "D"), cex=1/par("cex"))
       }
 
       if (i == 2 && (drawall || (mode == "point" || old$mode == "point" || cex[1] != old$cex[1] || pch != old$pch))) { # point
