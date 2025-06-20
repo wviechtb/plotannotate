@@ -7,5 +7,6 @@ Depends: R (>= 4.2.0)
 Imports: stats, graphics, grDevices, grid, conicfit
 Description: Interactively annotate 'base R graphics' plots with freehand drawing, symbols (points, lines, arrows, rectangles, circles, ellipses), and text. This is useful for teaching, for example to visually explain certain plot elements, and creating quick sketches.
 License: GPL-3
+Encoding: UTF-8
 URL: https://github.com/wviechtb/plotannotate https://www.wvbauer.com
 BugReports: https://github.com/wviechtb/plotannotate/issues

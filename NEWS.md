@@ -8,9 +8,9 @@
 
 - much faster undo for freehand drawing
 
-- can now select from three different line types
+- can now toggle through four different point symbols and three different line types
 
-- info at the top now also shows the drawing mode; can click on the boxes to select the mode / color
+- info at the top now also shows the drawing mode; can click on the boxes to select the mode / color (or to toggle smooth/snap)
 
 - added `icex` argument for rescaling the visual information
 

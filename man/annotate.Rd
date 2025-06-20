@@ -5,7 +5,8 @@
    Function to add annotations to a plot.
 }
 \usage{
-annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TRUE)
+annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1),
+         info=TRUE, icex=1)
 }
 \arguments{
    \item{col}{a vector of colors (can be up to length 9).}
@@ -40,8 +41,8 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TR
 
    \tabular{lll}{
    \bold{key} \tab \ics \tab \bold{function} \cr
-   \verb{-+}  \tab \ics \tab Decrease/increase the line width or point/text size. The default sizes are set by the \code{lwd} and \code{cex} arguments. Can also use \verb{=} instead of \verb{+} or the down and up arrow keys for the same purpose. \cr
-   \verb{,}   \tab \ics \tab Toggles through three different line types (solid, dashed, dotted). This affects lines, arrows, rectangles, circles, and ellipses. \cr
+   \enc{↓}{|}\enc{↑}{|} \tab \ics \tab Decrease/increase the line width or point/text size. The default sizes are set by the \code{lwd} and \code{cex} arguments. Can also use the \verb{-} and \verb{+} (or \verb{=}) keys for the same purpose. \cr
+   \enc{←}{<-}\enc{→}{->} \tab \ics \tab Toggle through four different point symbols (filled circle/square/diamond, open circle) in point drawing mode or three different line types (solid, dashed, dotted) when drawing lines, arrows, rectangles, circles, or ellipses. \cr
    \verb{s}   \tab \ics \tab For freehand drawing, toggle smooth mode, so that the line is drawn after running a smoother over the input coordinates. For lines and arrows, toggle snap mode, so that lines/arrows are drawn exactly horizontally/vertically. Selecting the same mode twice or using the middle mouse button also toggles these modes. \cr
    }
 

@@ -1,4 +1,4 @@
-.info <- function(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=FALSE) {
+.info <- function(mode, old, col, colnum, lwd, cex, snap, smooth, lty, pch, info, icex, drawall=FALSE) {
 
    if (!info)
       return(invisible())
@@ -113,11 +113,11 @@
          #     grconvertY(0.985, from="ndc", to="user"), ifelse(smooth, "S", "D"), cex=1/par("cex"))
       }
 
-      if (i == 2 && (drawall || (mode == "point" || old$mode == "point" || cex[1] != old$cex[1]))) { # point
+      if (i == 2 && (drawall || (mode == "point" || old$mode == "point" || cex[1] != old$cex[1] || pch != old$pch))) { # point
          rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
          rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          points(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
-                grconvertY(0.985, from="ndc", to="user"), pch=19, cex=min(cex[1],2)/par("cex")*icex)
+                grconvertY(0.985, from="ndc", to="user"), pch=pch, cex=min(cex[1],1.7)/par("cex")*sqrt(icex))
       }
 
       if (i == 3 && (drawall || (mode == "line" || old$mode == "line" || snap != old$snap || lwd[2] != old$lwd[2] || lty != old$lty))) { # line / with snap mode
@@ -200,7 +200,7 @@
          rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border=col.bg, lwd=2*icex)
          rect(cords1[1], cords1[2], cords2[1], cords2[2], col=col.bg, border="gray80", lwd=1*icex)
          text(grconvertX(xpos[i] + 0.01, from="ndc", to="user"),
-              grconvertY(0.985, from="ndc", to="user"), "T", font=2, cex=min(1.2, cex[2])/par("cex")*icex)
+              grconvertY(0.985, from="ndc", to="user"), "T", font=2, cex=min(1.2, cex[2])/par("cex")*sqrt(icex))
       }
 
       if (i == 10 && (drawall || (mode == "eraser" || old$mode == "eraser" || lwd[3] != old$lwd[3]))) { # eraser
