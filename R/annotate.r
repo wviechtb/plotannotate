@@ -652,7 +652,7 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             info <<- !info
             if (!info)
                .clear(TRUE, col.bg)
-            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, drawall=info)
+            boxpos <<- .info(mode, old, col, colnum, lwd, cex, snap, smooth, lty, info, icex, drawall=info)
             return(NULL)
          }
 
