@@ -27,7 +27,7 @@
       if (mode %in% c("line", "arrow", "arrow2") && snap)
          txt <- paste0(txt, " (snap)")
 
-      text(cords[1], cords[2], txt, pos=4, cex=0.5/par("cex")*sqrt(infocex))
+      text(cords[1], cords[2], txt, pos=4, cex=0.5/par("cex"))
 
    }
 
@@ -51,7 +51,7 @@
       if (mode %in% c("text", "type"))
          txt <- paste0("Text size: ", cex[2])
 
-      text(cords[1], cords[2], txt, pos=4, cex=0.5/par("cex")*sqrt(infocex))
+      text(cords[1], cords[2], txt, pos=4, cex=0.5/par("cex"))
 
    }
 
