@@ -5,15 +5,13 @@
    Function to add annotations to a plot.
 }
 \usage{
-annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1),
-         info=TRUE, icex=1)
+annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1), info=TRUE)
 }
 \arguments{
    \item{col}{a vector of colors (can be up to length 9).}
    \item{lwd}{a numeric vector to specify the line width for freehand drawing, for symbols, and the eraser.}
    \item{cex}{a numeric vector to specify the size of points and text.}
-   \item{info}{a logical to specify whether visual information about the drawing mode and colors should be shown while annotating a plot.}
-   \item{icex}{a numeric value to specify a multiplication factor for the visual information.}
+   \item{info}{a logical to specify whether visual information about the drawing mode and colors should be shown while annotating a plot. Can also be a numeric value to specify a multiplication factor for the visual information.}
 }
 \details{
 
@@ -57,7 +55,7 @@ annotate(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1,1),
    \verb{i}   \tab \ics \tab Toggle \code{info} on/off. \cr
    }
 
-   When \code{info=TRUE} (the default), then visual information about the drawing mode and colors are shown at the top left while annotating a plot. This information may overlap with the plot title or other elements. One can use the \code{icex} argument to rescale the visual information to better match the resolution of the plot. Note that the boxes for the drawing modes and colors are clickable.
+   When \code{info=TRUE} (the default), then visual information about the drawing mode and colors are shown at the top left while annotating a plot. This information may overlap with the plot title or other elements. One can use the \code{info} argument to specify a numeric value to rescale the visual information to better match the resolution of the plot. Note that the boxes for the drawing modes and colors are clickable.
 
    Resizing plots while or after the \code{annotate} function has been run is not recommended (all annotations and visual elements need to be redrawn, which can take some time, especially when a lot of annotations have been added to the plot).
 
