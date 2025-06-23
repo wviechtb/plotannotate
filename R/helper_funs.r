@@ -248,11 +248,11 @@
 
 }
 
-.arrows <- function(x0, y0, x1, y1, col, lwd, lty, code = 1) {
+.arrows <- function(x0, y0, x1, y1, col, lwd, lty, infocex, code=1) {
 
    segments(x0, y0, x1, y1, col=col, lwd=lwd, lty=lty)
 
-   arrow_length <- 0.01
+   arrow_length <- 0.01 * infocex
    dx <- x1 - x0
    dy <- y1 - y0
    len <- sqrt(dx^2 + dy^2)

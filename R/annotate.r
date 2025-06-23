@@ -111,6 +111,8 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
    # create the mouse and keyboard event handlers
 
    fun.mousedown <- function(button,x,y) {
+      if (is.null(button))
+         return(NULL)
       if (button == 2L) {
          .clear(info, col.bg)
          return(invisible(1))
@@ -332,9 +334,9 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
       if (mode == "line")
          segments(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty)
       if (mode == "arrow")
-         .arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty)
+         .arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty, infocex=infocex)
       if (mode == "arrow2")
-         .arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty, code=3)
+         .arrows(x.start, y.start, x.last, y.last, lwd=lwd[2], col=col[colnum], lty=lty, infocex=infocex, code=3)
       if (mode == "ellipse") {
          xy <- cbind(x.coords, y.coords)
          fit <- try(conicfit::EllipseDirectFit(xy), silent=TRUE)
@@ -640,9 +642,9 @@ annotate <- function(col=c("black","red","green","blue"), lwd=c(4,4,30), cex=c(1
             if (type == "line")
                segments(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg)
             if (type == "arrow")
-               arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg)
+               .arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg, lty=1, infocex=infocex)
             if (type == "arrow2")
-               arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg, code=3)
+               .arrows(xb[1], yb[1], xb[2], yb[2], lwd=lwdb+4, col=col.bg, lty=1, infocex=infocex, code=3)
             if (type == "text")
                rect(xb[1], yb[1], xb[2], yb[2], col=col.bg, border=col.bg)
             buffer <<- buffer[-blen]

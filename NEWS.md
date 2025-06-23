@@ -1,4 +1,4 @@
-# plotannotate 1.3-0 (2025-06-21)
+# plotannotate 1.3-0 (2025-06-23)
 
 - improved the circle drawing code, so that either the x- or y-axis distance properly determines the circle radius
 
