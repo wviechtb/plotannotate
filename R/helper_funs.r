@@ -141,12 +141,12 @@
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.985, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10)
+                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10*infocex)
          } else {
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.980, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10)
+                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10*infocex)
          }
       }
 
@@ -157,12 +157,12 @@
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.985, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10, code=3)
+                   grconvertY(0.985, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10*infocex), code=3)
          } else {
             arrows(grconvertX(xpos[i] + 0.003, from="ndc", to="user"),
                    grconvertY(0.980, from="ndc", to="user"),
                    grconvertX(xpos[i] + 0.017, from="ndc", to="user"),
-                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10, code=3)
+                   grconvertY(0.990, from="ndc", to="user"), lwd=min(lwd[2],8)*infocex, length=0.10*infocex), code=3)
          }
       }
 
